@@ -8,8 +8,11 @@ use tracing_subscriber::util::SubscriberInitExt;
 use tracing_subscriber::EnvFilter;
 
 fn main() -> Result<()> {
+    dotenvy::dotenv().ok();
+
     tracing_subscriber::registry()
         .with(tracing_subscriber::fmt::layer())
+        .with(EnvFilter::from_default_env())
         .init();
 
     let runtime = tokio::runtime::Runtime::new()?;
