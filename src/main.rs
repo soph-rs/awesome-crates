@@ -1,5 +1,5 @@
 use anyhow::Result;
-use opendal::layers::TracingLayer;
+use opendal::layers::LoggingLayer;
 use opendal::services::Fs;
 use opendal::Operator;
 use std::path::PathBuf;
@@ -19,9 +19,12 @@ fn main() -> Result<()> {
 
     runtime.block_on(test_fs())?;
 
+    println!("hello,world");
+
     Ok(())
 }
 
+// https://opendal.apache.org/docs/rust/opendal/layers/struct.LoggingLayer.html
 async fn test_fs() -> Result<()> {
     let base_path = std::env::var("CARGO_MANIFEST_DIR").map(PathBuf::from)?;
 
@@ -33,19 +36,17 @@ async fn test_fs() -> Result<()> {
         .root(&base_path.join("storage").as_path().to_string_lossy());
 
     // `Accessor` provides the low level APIs, we will use `Operator` normally.
-    let op: Operator = Operator::new(builder)?.layer(TracingLayer).finish();
+    let op: Operator = Operator::new(builder)?
+        .layer(LoggingLayer::default())
+        .finish();
 
     op.write("hello.log", "Hello OpenDAL!").await?;
 
-    let content = op.read("hello.log").await?.current();
+    let _content = op.read("hello.log").await?.current();
 
-    dbg!(content);
-
-    let stat = op.stat("hello.log").await?;
+    let _stat = op.stat("hello.log").await?;
 
     op.copy("hello.log", "hello2.log").await?;
-
-    dbg!(stat);
 
     Ok(())
 }

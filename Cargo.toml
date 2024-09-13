@@ -10,3 +10,4 @@ opendal = { version = "0.49.2", features = ["services-fs", "layers-tracing"] }
 tokio = { version = "1.40.0" }
 tracing = "0.1.40"
 tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
+log = "0.4.22"
