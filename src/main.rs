@@ -1,6 +1,6 @@
 use anyhow::Result;
 use opendal::layers::LoggingLayer;
-use opendal::services::Fs;
+use opendal::services::{Fs, Redis};
 use opendal::Operator;
 use std::path::PathBuf;
 use tracing_subscriber::layer::SubscriberExt;
@@ -18,6 +18,7 @@ fn main() -> Result<()> {
     let runtime = tokio::runtime::Runtime::new()?;
 
     runtime.block_on(test_fs())?;
+    runtime.block_on(test_redis())?;
 
     println!("hello,world");
 
@@ -47,6 +48,20 @@ async fn test_fs() -> Result<()> {
     let _stat = op.stat("hello.log").await?;
 
     op.copy("hello.log", "hello2.log").await?;
+
+    Ok(())
+}
+
+async fn test_redis() -> Result<()> {
+    let mut builder = Redis::default().root("/opendal:");
+
+    // this will build a Operator accessing Redis which runs on tcp://localhost:6379
+    let op: Operator = Operator::new(builder)?
+        .layer(LoggingLayer::default())
+        .finish();
+
+    op.write("a", "b").await?;
+    op.read("a").await?;
 
     Ok(())
 }
