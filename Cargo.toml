@@ -1,6 +1,9 @@
 [package]
-name = "opendal"
+name = "opendal-demo"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+anyhow = "1.0.88"
+opendal = { version = "0.49.2", features = ["services-fs"] }
+tokio = { version = "1.40.0", features = ["macros"] }

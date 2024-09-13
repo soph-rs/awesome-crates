@@ -1,3 +1,8 @@
-fn main() {
-    println!("Hello, world!");
+use anyhow::Result;
+
+#[tokio::main]
+async fn main() -> Result<()> {
+    println!("Hello,world");
+
+    Ok(())
 }
