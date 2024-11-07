@@ -9,7 +9,7 @@ async fn main() -> anyhow::Result<()> {
     let client = HelloClient::new(client::Config::default(), transport.await?).spawn();
 
     match client
-        .hello(context::current(), format!("{}", "Jiannei"))
+        .hello(context::current(), "Jiannei".to_string())
         .await
     {
         Ok(hello) => println!("{:?}", hello),

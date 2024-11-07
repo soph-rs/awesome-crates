@@ -1,0 +1,82 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  CARGO_TERM_COLOR: always
+  MSRV: '1.70'
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: taiki-e/install-action@protoc
+      - uses: dtolnay/rust-toolchain@beta
+        with:
+          components: clippy, rustfmt
+      - uses: Swatinem/rust-cache@v2
+      - name: Check
+        run: cargo clippy --workspace --all-targets --all-features -- -D warnings
+      - name: rustfmt
+        run: cargo fmt --all --check
+
+  #  check-docs:
+  #    runs-on: ubuntu-latest
+  #    steps:
+  #      - uses: actions/checkout@v4
+  #      - uses: dtolnay/rust-toolchain@stable
+  #      - uses: Swatinem/rust-cache@v2
+  #      - name: cargo doc
+  #        env:
+  #          RUSTDOCFLAGS: "-D rustdoc::all -A rustdoc::private-doc-tests"
+  #        run: cargo doc --all-features --no-deps
+
+  cargo-hack:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: taiki-e/install-action@protoc
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Install cargo-hack
+        run: |
+          curl -LsSf https://github.com/taiki-e/cargo-hack/releases/latest/download/cargo-hack-x86_64-unknown-linux-gnu.tar.gz | tar xzf - -C ~/.cargo/bin
+      - name: cargo hack check
+        run: cargo hack check --each-feature --no-dev-deps --all
+
+  test-versions:
+    needs: check
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        rust: [ stable, beta ]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: taiki-e/install-action@protoc
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ matrix.rust }}
+      - uses: Swatinem/rust-cache@v2
+      - name: Run tests
+        run: cargo test --workspace --exclude ayun-opendal --all-features --all-targets
+#
+#  dependencies-are-sorted:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v4
+#      - uses: dtolnay/rust-toolchain@beta
+#      - uses: Swatinem/rust-cache@v2
+#      - name: Install cargo-sort
+#        run: |
+#          cargo install cargo-sort
+#      # Work around cargo-sort not honoring workspace.exclude
+#      - name: Remove non-crate folder
+#        run: rm -rf examples/async-graphql
+#      - name: Check dependency tables
+#        run: |
+#          cargo sort --workspace --grouped --check
