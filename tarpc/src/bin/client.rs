@@ -8,13 +8,11 @@ async fn main() -> anyhow::Result<()> {
 
     let client = HelloClient::new(client::Config::default(), transport.await?).spawn();
 
-    match client
-        .hello(context::current(), "Jiannei".to_string())
-        .await
-    {
-        Ok(hello) => println!("{:?}", hello),
-        Err(e) => panic!("{:?}", anyhow::Error::from(e)),
-    }
+    let response = client
+        .hello(context::current(), "tarpc".to_string())
+        .await?;
+
+    println!("{:?}", response);
 
     Ok(())
 }

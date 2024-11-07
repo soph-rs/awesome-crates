@@ -18,6 +18,7 @@ impl Greeter for MyGreeter {
         let reply = HelloReply {
             message: format!("Hello {}!", request.into_inner().name),
         };
+
         Ok(Response::new(reply))
     }
 }
