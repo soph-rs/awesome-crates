@@ -1,11 +1,5 @@
 use anyhow::Result;
-use opendal::layers::LoggingLayer;
-use opendal::services::{Fs, Redis};
-use opendal::Operator;
-use std::path::PathBuf;
-use tracing_subscriber::layer::SubscriberExt;
-use tracing_subscriber::util::SubscriberInitExt;
-use tracing_subscriber::EnvFilter;
+use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
 
 fn main() -> Result<()> {
     dotenvy::dotenv().ok();
@@ -17,7 +11,9 @@ fn main() -> Result<()> {
 
     let runtime = tokio::runtime::Runtime::new()?;
 
+    #[cfg(feature = "fs")]
     runtime.block_on(test_fs())?;
+    #[cfg(feature = "redis")]
     runtime.block_on(test_redis())?;
 
     println!("hello,world");
@@ -26,11 +22,15 @@ fn main() -> Result<()> {
 }
 
 // https://opendal.apache.org/docs/rust/opendal/layers/struct.LoggingLayer.html
+#[cfg(feature = "fs")]
 async fn test_fs() -> Result<()> {
+    use opendal::{layers::LoggingLayer, services::Fs, Operator};
+    use std::path::PathBuf;
+
     let base_path = std::env::var("CARGO_MANIFEST_DIR").map(PathBuf::from)?;
 
     // Create fs backend builder.
-    let mut builder = Fs::default()
+    let builder = Fs::default()
         // Set the root for fs, all operations will happen under this root.
         //
         // NOTE: the root must be absolute path.
@@ -52,10 +52,14 @@ async fn test_fs() -> Result<()> {
     Ok(())
 }
 
+#[cfg(feature = "redis")]
 async fn test_redis() -> Result<()> {
-    let mut builder = Redis::default().root("/opendal:");
+    use opendal::{layers::LoggingLayer, services::Redis, Operator};
 
-    // this will build a Operator accessing Redis which runs on tcp://localhost:6379
+    let builder = Redis::default().root("/opendal:");
+
+    // this will build an Operator accessing Redis which runs on
+    // tcp://localhost:6379
     let op: Operator = Operator::new(builder)?
         .layer(LoggingLayer::default())
         .finish();
