@@ -1,0 +1,19 @@
+[package]
+name = "opendal-demo"
+version.workspace = true
+edition.workspace = true
+
+[features]
+default = ["fs"]
+
+fs = ["opendal/services-fs"]
+redis = ["opendal/services-redis"]
+
+[dependencies]
+anyhow = { workspace = true }
+dotenvy = { workspace = true }
+log = { workspace = true }
+opendal = { workspace = true, features = ["layers-tracing"] }
+tokio = { workspace = true, features = ["rt-multi-thread"] }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true, features = ["env-filter", "fmt"] }
