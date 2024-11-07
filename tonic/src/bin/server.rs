@@ -1,68 +1,36 @@
+use service::hello_world::{
+    greeter_server::{Greeter, GreeterServer},
+    HelloReply, HelloRequest,
+};
 use tonic::{transport::Server, Request, Response, Status};
 
-use hello::{
-    hello_server::{Hello, HelloServer},
-    HelloRequest, HelloResponse,
-};
-use service::{
-    basic::BaseResponse,
-    goodbye::{
-        goodbye_server::{Goodbye, GoodbyeServer},
-        GoodbyeRequest, GoodbyeResponse,
-    },
-    hello,
-};
-
 #[derive(Default)]
-pub struct HelloService {}
+pub struct MyGreeter {}
 
 #[tonic::async_trait]
-impl Hello for HelloService {
-    async fn hello(&self, req: Request<HelloRequest>) -> Result<Response<HelloResponse>, Status> {
-        println!("hello receive request: {:?}", req);
-
-        let response = HelloResponse {
-            data: format!("Hello, {}", req.into_inner().name),
-            message: Some(BaseResponse {
-                message: "Ok".to_string(),
-                code: 200,
-            }),
-        };
-        Ok(Response::new(response))
-    }
-}
-
-#[derive(Default)]
-pub struct GoodbyeService {}
-
-#[tonic::async_trait]
-impl Goodbye for GoodbyeService {
-    async fn goodbye(
+impl Greeter for MyGreeter {
+    async fn say_hello(
         &self,
-        req: Request<GoodbyeRequest>,
-    ) -> Result<Response<GoodbyeResponse>, Status> {
-        println!("goodbye receive request: {:?}", req);
+        request: Request<HelloRequest>,
+    ) -> Result<Response<HelloReply>, Status> {
+        println!("Got a request from {:?}", request.remote_addr());
 
-        let response = GoodbyeResponse {
-            data: format!("Goodbye, {}", req.into_inner().name),
-            message: Some(BaseResponse {
-                message: "Ok".to_string(),
-                code: 200,
-            }),
+        let reply = HelloReply {
+            message: format!("Hello {}!", request.into_inner().name),
         };
-        Ok(Response::new(response))
+        Ok(Response::new(reply))
     }
 }
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let addr = "0.0.0.0:50051".parse()?;
+    let addr = "[::1]:50051".parse()?;
+    let greeter = MyGreeter::default();
 
-    println!("server starting at: {}", addr);
+    println!("GreeterServer listening on {}", addr);
 
     Server::builder()
-        .add_service(HelloServer::new(HelloService::default()))
-        .add_service(GoodbyeServer::new(GoodbyeService::default()))
+        .add_service(GreeterServer::new(greeter))
         .serve(addr)
         .await?;
 
