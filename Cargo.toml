@@ -4,24 +4,29 @@ members = [
     "opendal",
     "tarpc",
     "tonic"
-]
+    , "utoipa"]
 
 [workspace.package]
 version = "0.24.0"
+license = "MIT"
 edition = "2021"
+homepage = "https://github.com/soph-rs/awesome-crates"
+repository = "https://github.com/soph-rs/awesome-crates"
 authors = ["jiannei <longjian.huang@foxmail.com>"]
 rust-version = "1.70.0"
 
 [workspace.dependencies]
-anyhow = { version = "1.0.93", default-features = false }
+anyhow = { version = "1.0.94", default-features = false }
+axum = { version = "0.7.9", default-features = false }
 dotenvy = { version = "0.15.7", default-features = false }
 futures = { version = "0.3.31", default-features = false }
 log = { version = "0.4.22", default-features = false }
 opendal = { version = "0.50.1", default-features = false }
 prost = { version = "0.13.3", default-features = false }
-tokio = { version = "1.41.0", default-features = false }
+tokio = { version = "1.42.0", default-features = false }
 tonic = { version = "0.12.3", default-features = false }
 tonic-build = { version = "0.12.3", default-features = false }
 tarpc = { version = "0.35.0", default-features = false }
-tracing = { version = "0.1.40", default-features = false }
-tracing-subscriber = { version = "0.3.18", default-features = false }
+tracing = { version = "0.1.41", default-features = false }
+tracing-subscriber = { version = "0.3.19", default-features = false }
+utoipa = { version = "5.2.0", default-features = false }
