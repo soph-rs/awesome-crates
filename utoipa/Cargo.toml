@@ -9,6 +9,14 @@ authors = { workspace = true }
 rust-version = { workspace = true }
 
 [dependencies]
-axum = { workspace = true, features = ["http1", "json", "tokio"] }
+axum = { workspace = true, features = ["http1", "json", "query", "tokio"] }
+hyper = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
 tokio = { workspace = true, features = ["rt-multi-thread"] }
 utoipa = { workspace = true, features = ["macros"] }
+utoipa-axum = { workspace = true }
+utoipa-rapidoc = { workspace = true, features = ["axum"] }
+utoipa-redoc = { workspace = true, features = ["axum"] }
+utoipa-scalar = { workspace = true, features = ["axum"] }
+utoipa-swagger-ui = { workspace = true, features = ["axum"] }
