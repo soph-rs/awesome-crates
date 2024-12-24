@@ -37,9 +37,7 @@ async fn test_fs() -> Result<()> {
         .root(&base_path.join("storage").as_path().to_string_lossy());
 
     // `Accessor` provides the low level APIs, we will use `Operator` normally.
-    let op: Operator = Operator::new(builder)?
-        .layer(LoggingLayer::default())
-        .finish();
+    let op: Operator = Operator::new(builder)?.layer(LoggingLayer::default()).finish();
 
     op.write("hello.log", "Hello OpenDAL!").await?;
 
@@ -60,9 +58,7 @@ async fn test_redis() -> Result<()> {
 
     // this will build an Operator accessing Redis which runs on
     // tcp://localhost:6379
-    let op: Operator = Operator::new(builder)?
-        .layer(LoggingLayer::default())
-        .finish();
+    let op: Operator = Operator::new(builder)?.layer(LoggingLayer::default()).finish();
 
     op.write("a", "b").await?;
     op.read("a").await?;

@@ -10,9 +10,7 @@ async fn main() -> anyhow::Result<()> {
 
     let client = HelloClient::new(client::Config::default(), transport.await?).spawn();
 
-    let response = client
-        .hello(context::current(), "tarpc".to_string())
-        .await?;
+    let response = client.hello(context::current(), "tarpc".to_string()).await?;
 
     println!("{:?}", response);
 

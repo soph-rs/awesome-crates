@@ -19,9 +19,7 @@ const TODO_TAG: &str = "todo";
 #[derive(OpenApi)]
 #[openapi(
     modifiers(&SecurityAddon),
-    tags(
-            (name = TODO_TAG, description = "Todo items management API")
-    )
+    tags((name = TODO_TAG, description = "Todo items management API"))
 )]
 struct ApiDoc;
 

@@ -55,9 +55,7 @@ pub(super) fn router() -> OpenApiRouter {
         get,
         path = "",
         tag = TODO_TAG,
-        responses(
-            (status = 200, description = "List all todos successfully", body = [Todo])
-        )
+        responses((status = 200, description = "List all todos successfully", body = [Todo]))
 )]
 async fn list_todos(State(store): State<Arc<Store>>) -> Json<Vec<Todo>> {
     let todos = store.lock().await.clone();
@@ -88,18 +86,13 @@ struct TodoSearchQuery {
             (status = 200, description = "List matching todos by query", body = [Todo])
         )
 )]
-async fn search_todos(
-    State(store): State<Arc<Store>>,
-    query: Query<TodoSearchQuery>,
-) -> Json<Vec<Todo>> {
+async fn search_todos(State(store): State<Arc<Store>>, query: Query<TodoSearchQuery>) -> Json<Vec<Todo>> {
     Json(
         store
             .lock()
             .await
             .iter()
-            .filter(|todo| {
-                todo.value.to_lowercase() == query.value.to_lowercase() && todo.done == query.done
-            })
+            .filter(|todo| todo.value.to_lowercase() == query.value.to_lowercase() && todo.done == query.done)
             .cloned()
             .collect(),
     )
@@ -127,10 +120,7 @@ async fn create_todo(State(store): State<Arc<Store>>, Json(todo): Json<Todo>) ->
         .map(|found| {
             (
                 StatusCode::CONFLICT,
-                Json(TodoError::Conflict(format!(
-                    "todo already exists: {}",
-                    found.id
-                ))),
+                Json(TodoError::Conflict(format!("todo already exists: {}", found.id))),
             )
                 .into_response()
         })
@@ -153,19 +143,13 @@ async fn create_todo(State(store): State<Arc<Store>>, Json(todo): Json<Todo>) ->
             (status = 200, description = "Todo marked done successfully"),
             (status = 404, description = "Todo not found")
         ),
-        params(
-            ("id" = i32, Path, description = "Todo database id")
-        ),
+        params(("id" = i32, Path, description = "Todo database id")),
         security(
             (), // <-- make optional authentication
             ("api_key" = [])
         )
 )]
-async fn mark_done(
-    Path(id): Path<i32>,
-    State(store): State<Arc<Store>>,
-    headers: HeaderMap,
-) -> StatusCode {
+async fn mark_done(Path(id): Path<i32>, State(store): State<Arc<Store>>, headers: HeaderMap) -> StatusCode {
     match check_api_key(false, headers) {
         Ok(_) => (),
         Err(_) => return StatusCode::UNAUTHORIZED,
@@ -196,18 +180,10 @@ async fn mark_done(
             (status = 401, description = "Unauthorized to delete Todo", body = TodoError, example = json!(TodoError::Unauthorized(String::from("missing api key")))),
             (status = 404, description = "Todo not found", body = TodoError, example = json!(TodoError::NotFound(String::from("id = 1"))))
         ),
-        params(
-            ("id" = i32, Path, description = "Todo database id")
-        ),
-        security(
-            ("api_key" = [])
-        )
+        params(("id" = i32, Path, description = "Todo database id")),
+        security(("api_key" = []))
 )]
-async fn delete_todo(
-    Path(id): Path<i32>,
-    State(store): State<Arc<Store>>,
-    headers: HeaderMap,
-) -> impl IntoResponse {
+async fn delete_todo(Path(id): Path<i32>, State(store): State<Arc<Store>>, headers: HeaderMap) -> impl IntoResponse {
     match check_api_key(true, headers) {
         Ok(_) => (),
         Err(error) => return error.into_response(),
@@ -222,20 +198,13 @@ async fn delete_todo(
     if todos.len() != len {
         StatusCode::OK.into_response()
     } else {
-        (
-            StatusCode::NOT_FOUND,
-            Json(TodoError::NotFound(format!("id = {id}"))),
-        )
-            .into_response()
+        (StatusCode::NOT_FOUND, Json(TodoError::NotFound(format!("id = {id}")))).into_response()
     }
 }
 
 // normally you should create a middleware for this but this is sufficient for
 // sake of example.
-fn check_api_key(
-    require_api_key: bool,
-    headers: HeaderMap,
-) -> Result<(), (StatusCode, Json<TodoError>)> {
+fn check_api_key(require_api_key: bool, headers: HeaderMap) -> Result<(), (StatusCode, Json<TodoError>)> {
     match headers.get("todo_apikey") {
         Some(header) if header != "utoipa-rocks" => Err((
             StatusCode::UNAUTHORIZED,
