@@ -17,7 +17,7 @@ rust-version = "1.70.0"
 
 [workspace.dependencies]
 anyhow = { version = "1.0.95", default-features = false }
-axum = { version = "0.7.9", default-features = false }
+axum = { version = "0.8.1", default-features = false }
 dotenvy = { version = "0.15.7", default-features = false }
 futures = { version = "0.3.31", default-features = false }
 hyper = { version = "1.5.2", default-features = false }
