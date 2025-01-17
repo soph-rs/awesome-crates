@@ -37,5 +37,5 @@ utoipa = { version = "5.2.0", default-features = false }
 utoipa-axum = { version = "0.2.0", default-features = false }
 utoipa-swagger-ui = { version = "8.0.3", default-features = false }
 utoipa-redoc = { version = "5.0.0", default-features = false }
-utoipa-rapidoc = { version = "5.0.0", default-features = false }
+utoipa-rapidoc = { version = "6.0.0", default-features = false }
 utoipa-scalar = { version = "0.2.0", default-features = false }
