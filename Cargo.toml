@@ -30,7 +30,7 @@ serde = { version = "1.0.217", default-features = false }
 serde_json = { version = "1.0.135", default-features = false }
 tonic = { version = "0.12.3", default-features = false }
 tonic-build = { version = "0.12.3", default-features = false }
-tarpc = { version = "0.35.0", default-features = false }
+tarpc = { version = "0.37.0", default-features = false }
 tracing = { version = "0.1.41", default-features = false }
 tracing-subscriber = { version = "0.3.19", default-features = false }
 utoipa = { version = "5.2.0", default-features = false }
